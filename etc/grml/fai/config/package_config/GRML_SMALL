@@ -75,7 +75,6 @@ setserial
 smartmontools
 statserial
 sudo
-sysvinit
 sysvinit-utils
 tar
 tcpd
