@@ -6,11 +6,6 @@
 # License:       This file is licensed under the GPL v2 or any later version.
 ################################################################################
 
-FILE_RC=false
-if ifclass FILE_RC ; then
-  FILE_RC=true
-fi
-
 set -u
 set -e
 . "$GRML_LIVE_CONFIG"
@@ -71,7 +66,7 @@ file_rc_setup() {
   fcopy -v -mroot,root,0755 /etc/init.d/bootlocal.last
 }
 
-if $FILE_RC ; then
+if ifclass FILE_RC ; then
   file_rc_setup
 else
   systemd_setup
