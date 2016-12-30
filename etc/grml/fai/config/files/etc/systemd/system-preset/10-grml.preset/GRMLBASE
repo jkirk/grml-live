@@ -2,7 +2,8 @@
 enable getty@.service
 
 # enable grml-specific services
-enable grml-autoconfig.service
+enable grml-netscript.service
 enable debug-shell.service
+enable resolvconf.service
 
 disable *
