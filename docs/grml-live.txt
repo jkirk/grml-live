@@ -487,7 +487,7 @@ please send us a bug report then). Check out <<deploy-on-debian,How do I deploy
 grml-live on a plain Debian installation>> for details how to set up grml-live
 on a plain, original Debian system.
 
-* enough free disk space; at least ~2GB are required for a minimal grml-live
+* enough free disk space; at least \~2GB are required for a minimal grml-live
 run (\~1GB for the chroot [$CHROOT_OUTPUT], \~400MB for the build target
 [$BUILD_OUTPUT], \~35MB for the netboot files and \~350MB for the resulting ISO
 [$ISO_OUTPUT] plus some temporary files), if you plan to use GRML_FULL you
@@ -509,6 +509,92 @@ Current state of grml-live with squashfs-tools and kernel
 
 Use squashfs-tools >=4.2-1 to build Grml (based) ISOs featuring kernel version
 2.6.38-grml[64] or newer.
+
+[[kernel-command-line-parameters]]
+Kernel command-line parameters
+------------------------------
+
+A lot of kernel command-line parameters are used in Grub's and ISOLINUX'
+configuration files (see:
+[`$TEMPLATE_DIRECTORY/boot/grub`](https://github.com/grml/grml-live/tree/master/templates/boot/grub)
++
+[`$TEMPLATE_DIRECTORY/boot/isolinux`](https://github.com/grml/grml-live/tree/master/templates/boot/isolinux).
+
+Although there are some "well known" resources for each parameter, it is not
+always very intuitive where to find them and what they are supposed to do.
+
+  initrd=::
+
+Specify the location of the initial ramdisk. Usually set to '/boot/%SHORT_NAME%/initrd.img'.
+
+Note: Grub uses a separate command (which is also named `initrad`) to load the
+initial ramdisks, so this kernel parameter is not needed when using Grub.
+
+* https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html
+* https://www.kernel.org/doc/html/latest/admin-guide/initrd.html
+* https://wiki.syslinux.org/wiki/index.php?title=SYSLINUX#INITRD_initrd_file
+* https://www.gnu.org/software/grub/manual/grub/html_node/initrd.html
+
+  boot=live::
+
+Activate **live-boot**.
+
+* https://manpages.debian.org/bullseye/live-boot-doc/live-boot.7.en.html
+
+  live-media-path=::
+
+Set the path to the live filesystem on the medium.
+
+* https://manpages.debian.org/bullseye/live-boot-doc/live-boot.7.en.html
+* https://github.com/grml/grml-live/blob/master/templates/GRML/grml-cheatcodes.txt
+
+  bootid=::
+
+Use specified argument as identifier for the ISO. 'grml-live' adjusts the boot
+files and replaces '%BOOTID%' with BOOTID set in grml-live.conf.
+If no BOOTID is set, it defaults to the grml-name and version string.
+
+If BOOTID does not match the BOOTID of the ISO a warning is issued and initramfs
+continues looking for the right medium and ultimately fails the boot process.
+
+* '/conf/bootid.txt' on the Grml CD
+* https://github.com/grml/grml-live/blob/master/templates/GRML/grml-cheatcodes.txt
+* https://github.com/grml/live-boot-grml/blob/master/components/9990-cmdline-old
+* https://github.com/grml/live-boot-grml/blob/master/components/9990-misc-helpers.sh
+
+  apm=::
+
+Advanced Power Management. Usually set it to 'power-off' (power off on
+shutdown) but this doesn't seem to be needed anymore.
+TODO: This options needs investigation.
+
+* https://github.com/torvalds/linux/blob/master/arch/x86/kernel/apm_32.c
+
+  vga=::
+
+Warning: This one is (currently) a bit complicated.
+Set the video mode and enable frame buffer for initramfs.
+So far so easy. Because of a problem with the kernel config [a long time
+ago](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=714929), we had to set
+`options vmwgfx enable_fbdev=1` in `/etc/modprobe.d/vmwgfx.conf` which enabled
+the framebuffer anyway. So in case the option is omitted, the Grml system
+changes to a higher resolution once the kernel module vmwgfx is loaded.
+TODO: This options needs investigation.
+
+Note, that Grub uses `gfxmode` and `gfxpayload` to set the particular graphics
+mode. Quoting the documentation:
+
+  Depending on your kernel, your distribution, your graphics card, and the phase
+  of the moon, note that using this option may cause GNU/Linux to suffer from
+  various display problems, particularly during the early part of the boot
+  sequence.
+
+* https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html
+* https://github.com/torvalds/linux/blob/master/Documentation/x86/boot.rst
+* https://github.com/torvalds/linux/blob/master/Documentation/admin-guide/svga.rst
+* https://salsa.debian.org/kernel-team/initramfs-tools/-/blob/master/docs/framebuffer
+* https://www.gnu.org/software/grub/manual/grub/html_node/gfxmode.html#gfxmode
+* https://www.gnu.org/software/grub/manual/grub/html_node/gfxpayload.html#gfxpayload
 
 [[faq]]
 FAQ
